@@ -7,7 +7,9 @@ import LoginPage from './pages/LoginPage';
 import TotemsListPage from './pages/totems/TotemsListPage';
 import TotemFormPage from './pages/totems/TotemFormPage';
 import PlantillasListPage from './pages/plantillas/PlantillasListPage';
+import PlantillaFormPage from './pages/plantillas/PlantillaFormPage';
 import RegionesListPage from './pages/regiones/RegionesListPage';
+import RegionFormPage from './pages/regiones/RegionFormPage';
 import InstitucionesListPage from './pages/instituciones/InstitucionesListPage';
 import InstitucionFormPage from './pages/instituciones/InstitucionFormPage';
 import CategoriasListPage from './pages/categorias/CategoriasListPage';
@@ -61,9 +63,13 @@ function App() {
             
             {/* Rutas de Plantillas */}
             <Route path="plantillas" element={<PlantillasListPage />} />
+            <Route path="plantillas/new" element={<PlantillaFormPage />} />
+            <Route path="plantillas/:id" element={<PlantillaFormPage />} />
             
             {/* Rutas de Regiones */}
             <Route path="regiones" element={<RegionesListPage />} />
+            <Route path="regiones/new" element={<RegionFormPage />} />
+            <Route path="regiones/:id" element={<RegionFormPage />} />
             
             {/* Rutas de Instituciones */}
             <Route path="instituciones" element={<InstitucionesListPage />} />

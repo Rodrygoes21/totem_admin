@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { regionesService } from '../../services/regiones.service';
+﻿import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { regionService } from '../../services/catalog.service';
 import toast from 'react-hot-toast';
-import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { Plus, Edit, Trash2, Power } from 'lucide-react';
 
 export default function RegionesListPage() {
+  const navigate = useNavigate();
   const [regiones, setRegiones] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -15,7 +16,7 @@ export default function RegionesListPage() {
   const loadRegiones = async () => {
     try {
       setLoading(true);
-      const data = await regionesService.getAll();
+      const data = await regionService.getAll();
       setRegiones(data);
     } catch (error) {
       toast.error('Error al cargar regiones');
@@ -25,15 +26,28 @@ export default function RegionesListPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('¿Estás seguro de eliminar esta región?')) return;
-
+  const handleToggle = async (id, currentStatus) => {
     try {
-      await regionesService.delete(id);
-      toast.success('Región eliminada exitosamente');
+      await regionService.toggle(id);
+      toast.success(`Región ${currentStatus ? 'desactivada' : 'activada'} correctamente`);
       loadRegiones();
     } catch (error) {
-      toast.error('Error al eliminar región');
+      toast.error('Error al cambiar el estado');
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async (id, nombre) => {
+    if (!window.confirm(`¿Estás seguro de eliminar la región "${nombre}"?`)) {
+      return;
+    }
+
+    try {
+      await regionService.delete(id);
+      toast.success('Región eliminada correctamente');
+      loadRegiones();
+    } catch (error) {
+      toast.error('Error al eliminar la región');
       console.error(error);
     }
   };
@@ -47,91 +61,46 @@ export default function RegionesListPage() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Regiones</h1>
-        <Link
-          to="/admin/regiones/new"
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition"
-        >
-          <PlusIcon className="w-5 h-5" />
+        <button onClick={() => navigate('/admin/regiones/new')} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          <Plus className="w-4 h-4" />
           Nueva Región
-        </Link>
+        </button>
       </div>
-
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nombre
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Descripción
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Estado
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {regiones.length === 0 ? (
-                <tr>
-                  <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
-                    No hay regiones registradas
-                  </td>
-                </tr>
-              ) : (
-                regiones.map((region) => (
-                  <tr key={region.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900">{region.nombre}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-500">
-                        {region.descripcion || 'Sin descripción'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          region.activo
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {region.activo ? 'Activa' : 'Inactiva'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-2">
-                        <Link
-                          to={`/admin/regiones/${region.id}/edit`}
-                          className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded transition"
-                          title="Editar"
-                        >
-                          <PencilIcon className="w-5 h-5" />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(region.id)}
-                          className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded transition"
-                          title="Eliminar"
-                        >
-                          <TrashIcon className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {regiones.map((region) => (
+          <div key={region.id} className="bg-white p-4 rounded-lg shadow border border-gray-200">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="font-bold text-lg text-gray-900">{region.nombre}</h3>
+              <span className={`px-2 py-1 text-xs rounded-full ${region.activo ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                {region.activo ? 'Activa' : 'Inactiva'}
+              </span>
+            </div>
+            {region.descripcion && (<p className="text-gray-600 text-sm mb-3">{region.descripcion}</p>)}
+            <div className="flex gap-2 pt-3 border-t border-gray-200">
+              <button onClick={() => navigate(`/admin/regiones/${region.id}`)} className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-sm">
+                <Edit className="w-3.5 h-3.5" />Editar
+              </button>
+              <button onClick={() => handleToggle(region.id, region.activo)} className={`flex items-center justify-center gap-1 px-3 py-1.5 rounded text-sm ${region.activo ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}`}>
+                <Power className="w-3.5 h-3.5" />
+              </button>
+              <button onClick={() => handleDelete(region.id, region.nombre)} className="flex items-center justify-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 rounded hover:bg-red-100 text-sm">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+      {regiones.length === 0 && (
+        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+          <p className="text-gray-500">No hay regiones registradas</p>
+          <button onClick={() => navigate('/admin/regiones/new')} className="mt-4 text-blue-600 hover:underline">
+            Crear la primera región
+          </button>
         </div>
-      </div>
+      )}
     </div>
   );
 }
