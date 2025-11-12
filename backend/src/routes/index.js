@@ -11,6 +11,7 @@ import notificacionRoutes from './notificaciones.js';
 import userChatRoutes from './userchat.js';
 import configuracionRoutes from './configuracion.js';
 import dashboardRoutes from './dashboard.js';
+import uploadRoutes from './upload.js';
 
 const router = express.Router();
 
@@ -27,6 +28,7 @@ router.use('/notificaciones', notificacionRoutes);
 router.use('/userchat', userChatRoutes);
 router.use('/configuracion', configuracionRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/upload', uploadRoutes);
 
 // Ruta de información de la API
 router.get('/', (req, res) => {
@@ -46,7 +48,8 @@ router.get('/', (req, res) => {
       notificaciones: '/api/notificaciones',
       userchat: '/api/userchat',
       configuracion: '/api/configuracion',
-      dashboard: '/api/dashboard'
+      dashboard: '/api/dashboard',
+      upload: '/api/upload'
     },
     documentation: '/api/docs'
   });
