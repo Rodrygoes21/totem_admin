@@ -19,22 +19,22 @@ const router = express.Router();
 const notificacionSchema = Joi.object({
   titulo: Joi.string().min(3).max(200).required(),
   mensaje: Joi.string().min(10).required(),
-  tipo: Joi.string().valid('info', 'warning', 'error', 'success').default('info'),
+  tipo: Joi.string().valid('info', 'warning', 'error', 'success', 'emergencia').default('info'),
   prioridad: Joi.string().valid('baja', 'media', 'alta', 'urgente').default('media'),
-  totem_id: Joi.number().integer().positive().optional(),
+  totem_id: Joi.number().integer().positive().optional().allow(null),
   fecha_inicio: Joi.date().required(),
-  fecha_fin: Joi.date().optional(),
+  fecha_fin: Joi.date().optional().allow(null),
   activo: Joi.boolean().default(true)
 });
 
 const updateNotificacionSchema = Joi.object({
   titulo: Joi.string().min(3).max(200).optional(),
   mensaje: Joi.string().min(10).optional(),
-  tipo: Joi.string().valid('info', 'warning', 'error', 'success').optional(),
+  tipo: Joi.string().valid('info', 'warning', 'error', 'success', 'emergencia').optional(),
   prioridad: Joi.string().valid('baja', 'media', 'alta', 'urgente').optional(),
-  totem_id: Joi.number().integer().positive().optional(),
+  totem_id: Joi.number().integer().positive().optional().allow(null),
   fecha_inicio: Joi.date().optional(),
-  fecha_fin: Joi.date().optional(),
+  fecha_fin: Joi.date().optional().allow(null),
   activo: Joi.boolean().optional()
 });
 
