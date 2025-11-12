@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import notificacionService from '../../services/notificacion.service';
-import totemService from '../../services/totem.service';
+import { notificacionService } from '../../services/notificacion.service';
+import { totemService } from '../../services/catalog.service';
 import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
@@ -26,6 +26,8 @@ export default function NotificacionesListPage() {
     tipo: 'info',
     totem_id: '',
     prioridad: 'media',
+    fecha_inicio: new Date().toISOString().slice(0, 16),
+    fecha_fin: '',
     activo: true,
   });
 
@@ -62,6 +64,8 @@ export default function NotificacionesListPage() {
         tipo: notif.tipo,
         totem_id: notif.totem_id || '',
         prioridad: notif.prioridad || 'media',
+        fecha_inicio: notif.fecha_inicio ? new Date(notif.fecha_inicio).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16),
+        fecha_fin: notif.fecha_fin ? new Date(notif.fecha_fin).toISOString().slice(0, 16) : '',
         activo: notif.activo,
       });
     } else {
@@ -72,6 +76,8 @@ export default function NotificacionesListPage() {
         tipo: 'info',
         totem_id: '',
         prioridad: 'media',
+        fecha_inicio: new Date().toISOString().slice(0, 16),
+        fecha_fin: '',
         activo: true,
       });
     }
@@ -101,8 +107,14 @@ export default function NotificacionesListPage() {
 
     try {
       const dataToSend = {
-        ...formData,
+        titulo: formData.titulo,
+        mensaje: formData.mensaje,
+        tipo: formData.tipo,
+        prioridad: formData.prioridad,
         totem_id: formData.totem_id || null,
+        fecha_inicio: formData.fecha_inicio,
+        fecha_fin: formData.fecha_fin || null,
+        activo: formData.activo,
       };
 
       if (editingId) {
@@ -312,6 +324,34 @@ export default function NotificacionesListPage() {
               ...totems.map(t => ({ value: t.id, label: t.nombre_to }))
             ]}
           />
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Fecha Inicio *
+              </label>
+              <input
+                type="datetime-local"
+                name="fecha_inicio"
+                value={formData.fecha_inicio}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Fecha Fin (opcional)
+              </label>
+              <input
+                type="datetime-local"
+                name="fecha_fin"
+                value={formData.fecha_fin}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
 
           <div className="flex items-center">
             <input
