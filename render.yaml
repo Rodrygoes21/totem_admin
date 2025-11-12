@@ -4,7 +4,7 @@ services:
     name: totem-backend
     runtime: node
     plan: free
-    region: oregon # Cambia según tu región preferida
+    region: oregon
     rootDir: backend
     buildCommand: npm install
     startCommand: npm start
@@ -12,25 +12,19 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 3000
+        value: 10000
       - key: DB_HOST
-        sync: false # Configura manualmente en el dashboard
+        value: switchback.proxy.rlwy.net
       - key: DB_PORT
-        value: 3306
+        value: 18664
       - key: DB_USER
-        sync: false # Configura manualmente
+        value: root
       - key: DB_PASSWORD
-        sync: false # Configura manualmente
+        value: JKwXRjsKuiXWlXaThpyJIgWRYctZqCki
       - key: DB_NAME
-        value: totem_db
+        value: railway
+      - key: JWT_SECRET
+        generateValue: true
       - key: APP_ORIGIN
-        sync: false # Configura con tu URL de Vercel después del deploy
+        value: https://totem-admin.vercel.app
     autoDeploy: true
-    healthCheckPath: /health
-
-# Opcional: Si quieres MySQL en Render (no es gratis)
-# databases:
-#   - name: totem-db
-#     databaseName: totem_db
-#     user: totem_user
-#     plan: starter
