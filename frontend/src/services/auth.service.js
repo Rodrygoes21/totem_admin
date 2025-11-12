@@ -1,9 +1,10 @@
-import axiosInstance from './axios';
-import config from '../config/api.config';
+import api, { config } from '../config/api.config';
 
 export const authService = {
   async login(credentials) {
-    const response = await axiosInstance.post(config.endpoints.auth.login, credentials);
+    console.log('🔐 Attempting login with:', { email: credentials.email });
+    const response = await api.post(config.endpoints.auth.login, credentials);
+    console.log('✅ Login response:', response.data);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -12,12 +13,12 @@ export const authService = {
   },
 
   async register(userData) {
-    const response = await axiosInstance.post(config.endpoints.auth.register, userData);
+    const response = await api.post(config.endpoints.auth.register, userData);
     return response.data;
   },
 
   async getMe() {
-    const response = await axiosInstance.get(config.endpoints.auth.me);
+    const response = await api.get(config.endpoints.auth.me);
     return response.data;
   },
 
