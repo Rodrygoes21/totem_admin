@@ -7,6 +7,7 @@ import {
   Tags, 
   MapPin, 
   Palette, 
+  Bell,
   LogOut,
   Menu,
   X,
@@ -27,6 +28,7 @@ const AdminLayout = () => {
   const menuItems = [
     { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/admin/totems', icon: Monitor, label: 'Tótems' },
+    { path: '/admin/notificaciones', icon: Bell, label: 'Notificaciones' },
     { path: '/admin/instituciones', icon: Building2, label: 'Instituciones' },
     { path: '/admin/categorias', icon: Tags, label: 'Categorías' },
     { path: '/admin/regiones', icon: MapPin, label: 'Regiones' },

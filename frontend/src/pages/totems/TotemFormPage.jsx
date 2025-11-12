@@ -14,6 +14,7 @@ import Select from '../../components/common/Select';
 import TextArea from '../../components/common/TextArea';
 import Card from '../../components/common/Card';
 import Loader from '../../components/common/Loader';
+import FileUpload from '../../components/common/FileUpload';
 import { ArrowLeft, Save } from 'lucide-react';
 
 const TotemFormPage = () => {
@@ -361,13 +362,12 @@ const TotemFormPage = () => {
         {/* Contenido y Multimedia */}
         <Card title="Contenido y Multimedia">
           <div className="space-y-6">
-            <Input
-              label="URL de ChatPDF"
-              name="chatpdf_url"
-              type="url"
+            <FileUpload
+              label="Archivo PDF o URL de ChatPDF"
               value={formData.chatpdf_url}
-              onChange={handleChange}
-              placeholder="https://..."
+              onChange={(url) => setFormData({ ...formData, chatpdf_url: url })}
+              accept=".pdf,application/pdf"
+              maxSize={10}
             />
 
             <Input
