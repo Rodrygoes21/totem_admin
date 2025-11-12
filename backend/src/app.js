@@ -14,7 +14,15 @@ const app = express();
 const isProduction = process.env.NODE_ENV === 'production';
 const allowedOrigins = process.env.APP_ORIGIN
   ? process.env.APP_ORIGIN.split(',').map((s) => s.trim()).filter(Boolean)
-  : [];
+  : [
+      'https://totem-admin-bay.vercel.app',
+      'https://totem-admin.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:5174'
+    ];
+
+console.log('🔐 CORS - Orígenes permitidos:', allowedOrigins);
+console.log('🌍 CORS - Modo:', isProduction ? 'PRODUCCIÓN' : 'DESARROLLO');
 
 app.use(
   cors({
@@ -25,12 +33,16 @@ app.use(
       // En desarrollo permitir cualquier origin
       if (!isProduction) return callback(null, true);
       // En producción, solo permitir origins listados
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      console.log('❌ Origin no permitido:', origin);
+      if (allowedOrigins.includes(origin)) {
+        console.log('✅ Origin permitido:', origin);
+        return callback(null, true);
+      }
+      console.log('❌ Origin NO permitido:', origin);
+      console.log('📋 Origins válidos:', allowedOrigins);
       return callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     exposedHeaders: ['Content-Range', 'X-Content-Range']
   })
