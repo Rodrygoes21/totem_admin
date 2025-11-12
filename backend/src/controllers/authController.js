@@ -1,67 +1,73 @@
-import db from '../models/index.js';
-import { hashPassword, comparePassword } from '../utils/hashPassword.js';
+import pool from '../db/connection.js';
 import { generateToken } from '../utils/generateToken.js';
 import { createError } from '../middlewares/errorHandler.js';
 import { HTTP_STATUS } from '../utils/constants.js';
-
-const { Usuario } = db;
+import { comparePassword } from '../utils/hashPassword.js';
+import db from '../models/index.js';
 
 export const login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: 'Email y contraseña requeridos' });
+        }
 
-    // Buscar usuario por email
-    const usuario = await Usuario.findOne({
-      where: { email, activo: true },
-      include: [{
-        model: db.Region,
-        as: 'region',
-        attributes: ['id', 'nombre']
-      }]
-    });
+        // Buscar usuario activo por email usando Sequelize
+        const usuario = await db.Usuario.findOne({ where: { email, activo: true } });
 
-    if (!usuario) {
-      throw createError('Credenciales inválidas', HTTP_STATUS.UNAUTHORIZED, 'INVALID_CREDENTIALS');
+        if (!usuario) {
+            return res.status(401).json({ success: false, message: 'Credenciales inválidas' });
+        }
+
+        // Verificar contraseña (hash)
+        const isValid = await comparePassword(password, usuario.contrasenia);
+        if (!isValid) {
+            return res.status(401).json({ success: false, message: 'Credenciales inválidas' });
+        }
+
+        // Actualizar último acceso (no bloquear si falla)
+        try {
+            await usuario.update({ ultimo_acceso: new Date() });
+        } catch (err) {
+            console.error('No se pudo actualizar ultimo_acceso:', err);
+        }
+
+        // Buscar info adicional (ej. región) si aplica
+        let regionInfo = null;
+        if (usuario.region_id && db.Region) {
+            try {
+                const region = await db.Region.findByPk(usuario.region_id, { attributes: ['id', 'nombre'] });
+                regionInfo = region ? { id: region.id, nombre: region.nombre } : null;
+            } catch (err) {
+                console.error('Error obteniendo region:', err);
+            }
+        }
+
+        // Generar token
+        const token = generateToken({
+            id: usuario.id,
+            username: usuario.username || usuario.nombre || null,
+            email: usuario.email,
+            rol: usuario.rol,
+            region_id: usuario.region_id
+        });
+
+        // Respuesta sin enviar la contraseña
+        const userResponse = {
+            id: usuario.id,
+            username: usuario.username || usuario.nombre || null,
+            email: usuario.email,
+            rol: usuario.rol,
+            region_id: usuario.region_id,
+            region: regionInfo,
+            ultimo_acceso: usuario.ultimo_acceso
+        };
+
+        return res.json({ success: true, message: 'Login exitoso', token, user: userResponse });
+    } catch (error) {
+        console.error('Error en login:', error);
+        next(error);
     }
-
-    // Verificar contraseña
-    const isValidPassword = await comparePassword(password, usuario.contrasenia);
-    if (!isValidPassword) {
-      throw createError('Credenciales inválidas', HTTP_STATUS.UNAUTHORIZED, 'INVALID_CREDENTIALS');
-    }
-
-    // Actualizar último acceso
-    await usuario.update({ ultimo_acceso: new Date() });
-
-    // Generar token
-    const token = generateToken({
-      id: usuario.id,
-      username: usuario.username,
-      email: usuario.email,
-      rol: usuario.rol,
-      region_id: usuario.region_id
-    });
-
-    // Preparar respuesta del usuario (sin contraseña)
-    const userResponse = {
-      id: usuario.id,
-      username: usuario.username,
-      email: usuario.email,
-      rol: usuario.rol,
-      region_id: usuario.region_id,
-      region: usuario.region,
-      ultimo_acceso: usuario.ultimo_acceso
-    };
-
-    res.json({
-      success: true,
-      message: 'Login exitoso',
-      token,
-      user: userResponse
-    });
-  } catch (error) {
-    next(error);
-  }
 };
 
 export const register = async (req, res, next) => {

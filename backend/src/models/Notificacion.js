@@ -25,11 +25,13 @@ const Notificacion = sequelize.define('Notificacion', {
   },
   totem_id: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
     references: {
       model: 'TOTEM',
       key: 'id'
-    }
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
   },
   fecha_inicio: {
     type: DataTypes.DATE,

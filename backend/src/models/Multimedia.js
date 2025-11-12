@@ -24,11 +24,13 @@ const Multimedia = sequelize.define('Multimedia', {
   },
   totem_id: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
     references: {
       model: 'TOTEM',
       key: 'id'
-    }
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
   },
   orden: {
     type: DataTypes.INTEGER,

@@ -21,7 +21,9 @@ const Region = sequelize.define('Region', {
   }
 }, {
   tableName: 'Region',
-  timestamps: true
+  timestamps: true,
+  createdAt: 'fecha_creacion',
+  updatedAt: 'fecha_actualizacion'
 });
 
 export default Region;

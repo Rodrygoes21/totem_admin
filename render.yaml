@@ -1,0 +1,36 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: totem-backend
+    runtime: node
+    plan: free
+    region: oregon # Cambia según tu región preferida
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DB_HOST
+        sync: false # Configura manualmente en el dashboard
+      - key: DB_PORT
+        value: 3306
+      - key: DB_USER
+        sync: false # Configura manualmente
+      - key: DB_PASSWORD
+        sync: false # Configura manualmente
+      - key: DB_NAME
+        value: totem_db
+      - key: APP_ORIGIN
+        sync: false # Configura con tu URL de Vercel después del deploy
+    autoDeploy: true
+    healthCheckPath: /health
+
+# Opcional: Si quieres MySQL en Render (no es gratis)
+# databases:
+#   - name: totem-db
+#     databaseName: totem_db
+#     user: totem_user
+#     plan: starter

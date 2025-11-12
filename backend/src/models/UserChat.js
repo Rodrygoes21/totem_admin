@@ -13,7 +13,9 @@ const UserChat = sequelize.define('UserChat', {
     references: {
       model: 'TOTEM',
       key: 'id'
-    }
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
   },
   pregunta: {
     type: DataTypes.TEXT,

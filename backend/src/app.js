@@ -5,6 +5,7 @@ import { router as apiRouter } from './routes/index.js';
 import { specs, swaggerUi } from './config/swagger.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
 import { requestLogger } from './middlewares/logger.js';
+import activityNotifier from './middlewares/activityNotifier.js';
 import db from './models/index.js';
 
 const app = express();
@@ -18,14 +19,20 @@ const allowedOrigins = process.env.APP_ORIGIN
 app.use(
   cors({
     origin: function (origin, callback) {
+      console.log('🌐 Solicitud CORS desde origen:', origin);
       // Permitir requests sin origin (curl, mobile apps, server-to-server)
       if (!origin) return callback(null, true);
       // En desarrollo permitir cualquier origin
       if (!isProduction) return callback(null, true);
       // En producción, solo permitir origins listados
       if (allowedOrigins.includes(origin)) return callback(null, true);
+      console.log('❌ Origin no permitido:', origin);
       return callback(new Error('Not allowed by CORS'));
     },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range']
   })
 );
 
@@ -53,10 +60,13 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs, {
 
 // Rutas de la API
 app.use('/api', apiRouter);
+app.use('/api', activityNotifier); // <<--- registrar antes de cargar las rutas para capturar cambios
+app.use('/api', apiRouter);
 
 // Middleware de manejo de errores
 app.use(notFoundHandler);
 app.use(errorHandler);
+
 
 // Función para inicializar la base de datos
 const initializeDatabase = async () => {
@@ -66,7 +76,7 @@ const initializeDatabase = async () => {
     
     // Sincronizar modelos (solo en desarrollo)
     if (process.env.NODE_ENV === 'development') {
-      await db.sequelize.sync({ alter: true });
+      await db.sequelize.sync({ alter: false });
       console.log('✅ Modelos sincronizados con la base de datos');
     }
   } catch (error) {
