@@ -128,9 +128,42 @@ export const plantillaService = {
   },
 };
 
+export const totemService = {
+  async getAll(params = {}) {
+    const response = await api.get('/totems', { params });
+    return response.data.data || response.data;
+  },
+
+  async getById(id) {
+    const response = await api.get(`/totems/${id}`);
+    return response.data.data || response.data;
+  },
+
+  async create(data) {
+    const response = await api.post('/totems', data);
+    return response.data.data || response.data;
+  },
+
+  async update(id, data) {
+    const response = await api.put(`/totems/${id}`, data);
+    return response.data.data || response.data;
+  },
+
+  async delete(id) {
+    const response = await api.delete(`/totems/${id}`);
+    return response.data;
+  },
+
+  async toggle(id) {
+    const response = await api.put(`/totems/${id}/toggle`);
+    return response.data;
+  },
+};
+
 export default {
   institucionService,
   categoriaService,
   regionService,
   plantillaService,
+  totemService,
 };
