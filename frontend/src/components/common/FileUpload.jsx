@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Upload, X, FileText, Loader2 } from 'lucide-react';
-import api from '../config/api.config';
+import api from '../../config/api.config';
 import toast from 'react-hot-toast';
 
 export default function FileUpload({ value, onChange, accept = '*', label = 'Subir archivo', maxSize = 10 }) {
