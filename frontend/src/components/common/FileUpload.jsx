@@ -28,7 +28,13 @@ export default function FileUpload({ value, onChange, accept = '*', label = 'Sub
         },
       });
 
-      const fileUrl = response.data.data.url;
+      // El backend puede devolver data.url o data.data.url
+      const fileUrl = response.data.url || response.data.data?.url;
+      
+      if (!fileUrl) {
+        throw new Error('No se recibió URL del archivo');
+      }
+      
       setPreview(fileUrl);
       onChange(fileUrl);
       toast.success('Archivo subido exitosamente');
