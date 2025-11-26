@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import totemService from '../../services/totem.service';
+import multimediaService from '../../services/multimedia.service';
 import {
   institucionService,
   categoriaService,
@@ -15,7 +16,7 @@ import TextArea from '../../components/common/TextArea';
 import Card from '../../components/common/Card';
 import Loader from '../../components/common/Loader';
 import FileUpload from '../../components/common/FileUpload';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Image, Video, Trash2, Plus, X } from 'lucide-react';
 
 const TotemFormPage = () => {
   const { id } = useParams();
@@ -44,6 +45,8 @@ const TotemFormPage = () => {
     intervalo_actualizacion: 30,
   });
   const [errors, setErrors] = useState({});
+  const [fotos, setFotos] = useState([]);
+  const [videos, setVideos] = useState([]);
 
   // Catálogos
   const [instituciones, setInstituciones] = useState([]);
@@ -101,6 +104,19 @@ const TotemFormPage = () => {
         mostrar_notificaciones: totem.mostrar_notificaciones ?? true,
         intervalo_actualizacion: totem.intervalo_actualizacion || 30,
       });
+      
+      // Cargar fotos y videos desde multimedia si existen
+      if (totem.Multimedias && Array.isArray(totem.Multimedias)) {
+        const fotosArray = totem.Multimedias
+          .filter(m => m.tipo_multimedia === 'imagen')
+          .map(m => m.url);
+        const videosArray = totem.Multimedias
+          .filter(m => m.tipo_multimedia === 'video')
+          .map(m => m.url);
+        
+        setFotos(fotosArray);
+        setVideos(videosArray);
+      }
     } catch (error) {
       toast.error('Error al cargar el tótem');
       console.error(error);
@@ -166,13 +182,51 @@ const TotemFormPage = () => {
         }
       });
 
+      let totemId;
       if (isEdit) {
         await totemService.update(id, dataToSend);
+        totemId = id;
         toast.success('Tótem actualizado correctamente');
       } else {
-        await totemService.create(dataToSend);
+        const response = await totemService.create(dataToSend);
+        totemId = response.data?.id || response.id;
         toast.success('Tótem creado correctamente');
       }
+
+      // Guardar fotos como multimedia
+      if (fotos.length > 0) {
+        const fotosData = fotos.map((url, index) => ({
+          tipo_multimedia: 'imagen',
+          url: url,
+          titulo: `Foto ${index + 1}`,
+          orden: index,
+          activo: true
+        }));
+        
+        if (isEdit) {
+          // Eliminar fotos antiguas y crear nuevas
+          await multimediaService.deleteByTotem(totemId, 'imagen');
+        }
+        await multimediaService.createMultiple(totemId, fotosData);
+      }
+
+      // Guardar videos como multimedia
+      if (videos.length > 0) {
+        const videosData = videos.map((url, index) => ({
+          tipo_multimedia: 'video',
+          url: url,
+          titulo: `Video ${index + 1}`,
+          orden: index,
+          activo: true
+        }));
+        
+        if (isEdit) {
+          // Eliminar videos antiguos y crear nuevos
+          await multimediaService.deleteByTotem(totemId, 'video');
+        }
+        await multimediaService.createMultiple(totemId, videosData);
+      }
+
       navigate('/admin/totems');
     } catch (error) {
       toast.error(
@@ -361,7 +415,7 @@ const TotemFormPage = () => {
 
         {/* Contenido y Multimedia */}
         <Card title="Contenido y Multimedia">
-          <div className="space-y-6">
+          <div className="space-y-8">
             <FileUpload
               label="Archivo PDF o URL de ChatPDF"
               value={formData.chatpdf_url}
@@ -371,7 +425,7 @@ const TotemFormPage = () => {
             />
 
             <Input
-              label="URL de Video"
+              label="URL de Video Principal"
               name="video_url"
               type="url"
               value={formData.video_url}
@@ -387,6 +441,90 @@ const TotemFormPage = () => {
               rows={5}
               placeholder="Contenido textual para mostrar en el tótem"
             />
+
+            {/* Galería de Fotos */}
+            <div className="border-t pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Image size={24} className="text-blue-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">Galería de Fotos</h3>
+                </div>
+                <span className="text-sm text-gray-500">{fotos.length} foto(s)</span>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                {fotos.map((foto, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={foto}
+                      alt={`Foto ${index + 1}`}
+                      className="w-full h-32 object-cover rounded-lg border-2 border-gray-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setFotos(fotos.filter((_, i) => i !== index))}
+                      className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <FileUpload
+                label="Agregar Fotos"
+                value=""
+                onChange={(url) => {
+                  if (url) {
+                    setFotos([...fotos, url]);
+                  }
+                }}
+                accept="image/*"
+                maxSize={5}
+              />
+            </div>
+
+            {/* Galería de Videos */}
+            <div className="border-t pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Video size={24} className="text-purple-600" />
+                  <h3 className="text-lg font-semibold text-gray-900">Videos Adicionales</h3>
+                </div>
+                <span className="text-sm text-gray-500">{videos.length} video(s)</span>
+              </div>
+
+              <div className="space-y-3 mb-4">
+                {videos.map((video, index) => (
+                  <div key={index} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <Video size={20} className="text-purple-600 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">Video {index + 1}</p>
+                      <p className="text-xs text-gray-500 truncate">{video}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setVideos(videos.filter((_, i) => i !== index))}
+                      className="flex-shrink-0 text-red-600 hover:text-red-800 hover:bg-red-50 p-2 rounded transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <FileUpload
+                label="Agregar Videos"
+                value=""
+                onChange={(url) => {
+                  if (url) {
+                    setVideos([...videos, url]);
+                  }
+                }}
+                accept="video/*"
+                maxSize={50}
+              />
+            </div>
           </div>
         </Card>
 
