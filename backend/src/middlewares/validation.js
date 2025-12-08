@@ -100,7 +100,7 @@ export const multimediaSchema = Joi.object({
 
 export const notificacionSchema = Joi.object({
   titulo: Joi.string().min(3).max(200).required(),
-  mensaje: Joi.string().min(10).required(),
+  mensaje: Joi.string().min(5).required(),
   tipo: Joi.string().valid('info', 'warning', 'error', 'success').default('info'),
   prioridad: Joi.string().valid('baja', 'media', 'alta', 'urgente').default('media'),
   totem_id: Joi.number().integer().positive().optional(),
