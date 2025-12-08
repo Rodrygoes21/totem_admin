@@ -25,7 +25,7 @@ const Notificacion = sequelize.define('Notificacion', {
   },
   totem_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     references: {
       model: 'TOTEM',
       key: 'id'
