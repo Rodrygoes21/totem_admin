@@ -12,6 +12,7 @@ import userChatRoutes from './userchat.js';
 import configuracionRoutes from './configuracion.js';
 import dashboardRoutes from './dashboard.js';
 import uploadRoutes from './upload.js';
+import proxyRoutes from './proxy.js';
 
 const router = express.Router();
 
@@ -29,6 +30,7 @@ router.use('/userchat', userChatRoutes);
 router.use('/configuracion', configuracionRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/upload', uploadRoutes);
+router.use('/proxy', proxyRoutes);
 
 // Ruta de información de la API
 router.get('/', (req, res) => {

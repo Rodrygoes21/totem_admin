@@ -26,11 +26,14 @@ export default function PDFViewer({ url, onClose }) {
     }
   };
 
-  // URL para Google Docs Viewer
-  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+  // URL del proxy del backend para evitar problemas de CORS con Cloudinary
+  const backendProxyUrl = `https://totem-admin.onrender.com/api/proxy/pdf-proxy?url=${encodeURIComponent(url)}`;
 
-  // URL para Mozilla PDF.js viewer
-  const mozillaViewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}`;
+  // URL para Google Docs Viewer (usa el proxy del backend)
+  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(backendProxyUrl)}&embedded=true`;
+
+  // URL para Mozilla PDF.js viewer (usa el proxy del backend)
+  const mozillaViewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(backendProxyUrl)}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
@@ -99,9 +102,9 @@ export default function PDFViewer({ url, onClose }) {
 
           {viewMode === 'direct' && (
             <iframe
-              src={url}
+              src={backendProxyUrl}
               className="w-full h-full border-0"
-              title="PDF Viewer - Direct"
+              title="PDF Viewer - Direct (via Backend Proxy)"
             />
           )}
         </div>
