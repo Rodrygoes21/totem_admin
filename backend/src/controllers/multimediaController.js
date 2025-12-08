@@ -298,3 +298,29 @@ export const reorderMultimedia = async (req, res, next) => {
   }
 };
 
+export const getMultimediaByTotem = async (req, res, next) => {
+  try {
+    const { totemId } = req.params;
+
+    // Verificar que el TOTEM existe
+    const totem = await Totem.findByPk(totemId);
+    if (!totem) {
+      throw createError('TOTEM no encontrado', HTTP_STATUS.NOT_FOUND, 'TOTEM_NOT_FOUND');
+    }
+
+    // Obtener todos los multimedia del TOTEM
+    const multimedia = await Multimedia.findAll({
+      where: { totem_id: totemId },
+      order: [['orden', 'ASC'], ['fecha_creacion', 'DESC']]
+    });
+
+    res.json({
+      success: true,
+      data: multimedia,
+      total: multimedia.length
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

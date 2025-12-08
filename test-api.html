@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API TOTEM</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button.secondary {
+            background: #6c757d;
+        }
+        button.secondary:hover {
+            background: #545b62;
+        }
+        #response {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        .hidden {
+            display: none;
+        }
+        .endpoint-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+        .method.post {
+            background: #28a745;
+            color: white;
+        }
+        .method.get {
+            background: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test API TOTEM</h1>
+        
+        <div class="form-group">
+            <label>Endpoint:</label>
+            <select id="endpoint">
+                <option value="/api/auth/login" data-method="POST">Login - POST /api/auth/login</option>
+                <option value="/health" data-method="GET">Health Check - GET /health</option>
+                <option value="/api/totems" data-method="GET">Listar Tótems - GET /api/totems</option>
+                <option value="/api/instituciones" data-method="GET">Listar Instituciones - GET /api/instituciones</option>
+                <option value="/api/categorias" data-method="GET">Listar Categorías - GET /api/categorias</option>
+                <option value="/api/regiones" data-method="GET">Listar Regiones - GET /api/regiones</option>
+                <option value="/api/plantillas" data-method="GET">Listar Plantillas - GET /api/plantillas</option>
+            </select>
+        </div>
+
+        <div class="endpoint-info">
+            <span class="method post" id="methodBadge">POST</span>
+            <code id="fullUrl">https://totem-admin.onrender.com/api/auth/login</code>
+        </div>
+
+        <div class="form-group" id="bodySection">
+            <label>Body (JSON):</label>
+            <input type="text" id="email" placeholder="Email" value="admin@totem.com">
+            <input type="password" id="password" placeholder="Password" value="admin123" style="margin-top: 10px;">
+        </div>
+
+        <div class="form-group" id="tokenSection" class="hidden">
+            <label>Token de autenticación (opcional):</label>
+            <input type="text" id="token" placeholder="Bearer token...">
+        </div>
+
+        <button onclick="testAPI()">🚀 Enviar Request</button>
+        <button class="secondary" onclick="clearResponse()">🗑️ Limpiar</button>
+
+        <div id="response" class="hidden"></div>
+    </div>
+
+    <script>
+        const baseURL = 'https://totem-admin.onrender.com';
+        
+        // Actualizar vista cuando cambia el endpoint
+        document.getElementById('endpoint').addEventListener('change', function() {
+            const endpoint = this.value;
+            const method = this.options[this.selectedIndex].dataset.method;
+            
+            document.getElementById('fullUrl').textContent = baseURL + endpoint;
+            document.getElementById('methodBadge').textContent = method;
+            document.getElementById('methodBadge').className = 'method ' + method.toLowerCase();
+            
+            // Mostrar/ocultar body según el método
+            if (method === 'POST') {
+                document.getElementById('bodySection').classList.remove('hidden');
+            } else {
+                document.getElementById('bodySection').classList.add('hidden');
+            }
+
+            // Mostrar token section para endpoints protegidos
+            if (endpoint !== '/api/auth/login' && endpoint !== '/health') {
+                document.getElementById('tokenSection').classList.remove('hidden');
+            } else {
+                document.getElementById('tokenSection').classList.add('hidden');
+            }
+        });
+
+        async function testAPI() {
+            const endpoint = document.getElementById('endpoint').value;
+            const method = document.getElementById('endpoint').options[document.getElementById('endpoint').selectedIndex].dataset.method;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const token = document.getElementById('token').value;
+            const responseDiv = document.getElementById('response');
+            
+            responseDiv.classList.remove('hidden', 'success', 'error');
+            responseDiv.textContent = '⏳ Enviando request...';
+
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+
+                // Agregar token si existe
+                if (token) {
+                    options.headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                // Agregar body si es POST
+                if (method === 'POST' && endpoint === '/api/auth/login') {
+                    options.body = JSON.stringify({
+                        email: email,
+                        password: password
+                    });
+                }
+
+                const response = await fetch(baseURL + endpoint, options);
+                const data = await response.json();
+                
+                // Formatear respuesta
+                const formatted = JSON.stringify(data, null, 2);
+                
+                if (response.ok) {
+                    responseDiv.classList.add('success');
+                    responseDiv.textContent = `✅ Status: ${response.status} ${response.statusText}\n\n${formatted}`;
+                    
+                    // Guardar token si es login exitoso
+                    if (data.token) {
+                        document.getElementById('token').value = data.token;
+                        alert('✅ Token guardado! Ahora puedes probar otros endpoints.');
+                    }
+                } else {
+                    responseDiv.classList.add('error');
+                    responseDiv.textContent = `❌ Status: ${response.status} ${response.statusText}\n\n${formatted}`;
+                }
+            } catch (error) {
+                responseDiv.classList.add('error');
+                responseDiv.textContent = `❌ Error de red:\n\n${error.message}`;
+            }
+        }
+
+        function clearResponse() {
+            document.getElementById('response').classList.add('hidden');
+            document.getElementById('response').textContent = '';
+        }
+    </script>
+</body>
+</html>

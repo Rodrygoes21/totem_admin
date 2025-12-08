@@ -2,6 +2,7 @@ import express from 'express';
 import {
   getAllMultimedia,
   getMultimediaById,
+  getMultimediaByTotem,
   createMultimedia,
   updateMultimedia,
   deleteMultimedia,
@@ -55,6 +56,7 @@ const reorderSchema = Joi.object({
 
 // Rutas públicas
 router.get('/', validateQuery(paginationSchema), getAllMultimedia);
+router.get('/totem/:totemId', getMultimediaByTotem);
 router.get('/:id', validateParams(idSchema), getMultimediaById);
 
 // Rutas protegidas
