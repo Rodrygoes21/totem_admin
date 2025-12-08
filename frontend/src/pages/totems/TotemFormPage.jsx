@@ -83,8 +83,8 @@ const TotemFormPage = () => {
   const fetchTotem = async () => {
     setLoading(true);
     try {
-      const response = await totemService.getById(id);
-      const totem = response.data;
+      const totem = await totemService.getById(id);
+      console.log('📋 Tótem cargado:', totem);
       setFormData({
         nombre_to: totem.nombre_to || '',
         ubicacion: totem.ubicacion || '',
