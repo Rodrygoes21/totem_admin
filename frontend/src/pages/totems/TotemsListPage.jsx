@@ -255,16 +255,24 @@ const TotemsListPage = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex items-center justify-end gap-2">
                           <button
-                            onClick={() => navigate(`/admin/totems/${totem.id}`)}
-                            className="text-blue-600 hover:text-blue-900"
+                            onClick={() => {
+                              console.log('Navegando a:', `/admin/totems/${totem.id}`);
+                              navigate(`/admin/totems/${totem.id}`);
+                            }}
+                            className="text-blue-600 hover:text-blue-900 transition-colors"
                             title="Ver/Editar tótem"
+                            type="button"
                           >
                             <Eye size={18} />
                           </button>
                           <button
-                            onClick={() => navigate(`/admin/totems/${totem.id}`)}
-                            className="text-yellow-600 hover:text-yellow-900"
+                            onClick={() => {
+                              console.log('Editando tótem:', totem.id);
+                              navigate(`/admin/totems/${totem.id}`);
+                            }}
+                            className="text-yellow-600 hover:text-yellow-900 transition-colors"
                             title="Editar tótem"
+                            type="button"
                           >
                             <Edit size={18} />
                           </button>
