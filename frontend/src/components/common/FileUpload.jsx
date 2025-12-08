@@ -53,6 +53,26 @@ export default function FileUpload({ value, onChange, accept = '*', label = 'Sub
     onChange('');
   };
 
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(preview);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = preview.split('/').pop() || 'documento.pdf';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success('Descarga iniciada');
+    } catch (error) {
+      console.error('Error al descargar:', error);
+      // Si falla el fetch, intentar descarga directa
+      window.open(preview, '_blank');
+    }
+  };
+
   const isPDF = preview && preview.toLowerCase().endsWith('.pdf');
 
   return (
@@ -77,13 +97,13 @@ export default function FileUpload({ value, onChange, accept = '*', label = 'Sub
                       Ver PDF
                     </button>
                     <span className="text-xs text-gray-400">•</span>
-                    <a 
-                      href={preview.replace('/upload/', '/upload/fl_attachment/')} 
-                      download
+                    <button
+                      type="button"
+                      onClick={handleDownload}
                       className="text-xs text-green-600 hover:underline"
                     >
                       Descargar
-                    </a>
+                    </button>
                   </div>
                 </div>
                 <button

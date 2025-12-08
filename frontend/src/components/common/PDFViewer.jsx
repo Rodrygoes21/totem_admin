@@ -6,10 +6,25 @@ export default function PDFViewer({ url, onClose }) {
 
   if (!url) return null;
 
-  // Limpiar URL de Cloudinary para forzar descarga si es necesario
-  const downloadUrl = url.includes('cloudinary.com') 
-    ? url.replace('/upload/', '/upload/fl_attachment/')
-    : url;
+  // Función para descargar el PDF
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = url.split('/').pop() || 'documento.pdf';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error al descargar:', error);
+      // Si falla, intentar abrir en nueva pestaña
+      window.open(url, '_blank');
+    }
+  };
 
   // URL para Google Docs Viewer
   const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
@@ -36,14 +51,13 @@ export default function PDFViewer({ url, onClose }) {
               <option value="direct">Vista Directa</option>
             </select>
 
-            <a
-              href={downloadUrl}
-              download
+            <button
+              onClick={handleDownload}
               className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
               title="Descargar PDF"
             >
               <Download size={20} />
-            </a>
+            </button>
 
             <a
               href={url}

@@ -18,6 +18,7 @@ export const uploadToCloudinary = async (filePath, options = {}) => {
     const defaultOptions = {
       folder: 'totem_uploads',
       resource_type: 'auto', // Detecta automáticamente (image, video, pdf, etc)
+      access_mode: 'public', // Asegura que sea público y accesible
       ...options,
     };
 
