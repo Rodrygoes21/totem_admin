@@ -18,7 +18,7 @@ const router = express.Router();
 // Schemas de validación
 const notificacionSchema = Joi.object({
   titulo: Joi.string().min(3).max(200).required(),
-  mensaje: Joi.string().min(10).required(),
+  mensaje: Joi.string().min(5).required(),
   tipo: Joi.string().valid('info', 'warning', 'error', 'success', 'emergencia').default('info'),
   prioridad: Joi.string().valid('baja', 'media', 'alta', 'urgente').default('media'),
   totem_id: Joi.number().integer().positive().optional().allow(null),
@@ -29,7 +29,7 @@ const notificacionSchema = Joi.object({
 
 const updateNotificacionSchema = Joi.object({
   titulo: Joi.string().min(3).max(200).optional(),
-  mensaje: Joi.string().min(10).optional(),
+  mensaje: Joi.string().min(5).optional(),
   tipo: Joi.string().valid('info', 'warning', 'error', 'success', 'emergencia').optional(),
   prioridad: Joi.string().valid('baja', 'media', 'alta', 'urgente').optional(),
   totem_id: Joi.number().integer().positive().optional().allow(null),
