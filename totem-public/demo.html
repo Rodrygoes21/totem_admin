@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Tótem Digital</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        .section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+        }
+        .section h2 {
+            color: #2563eb;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        .totem-selector {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .totem-selector input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .btn {
+            background: #2563eb;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .feature-list li::before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .info-box {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .warning-box {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        code {
+            background: #1f2937;
+            color: #10b981;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖥️ Sistema de Tótems Digitales</h1>
+        <p class="subtitle">Aplicación profesional para mostrar información en pantallas digitales</p>
+
+        <div class="section">
+            <h2>📋 Características Principales</h2>
+            <ul class="feature-list">
+                <li>Carrusel automático de imágenes y videos</li>
+                <li>Sistema de notificaciones en tiempo real</li>
+                <li>Alertas de emergencia con modal destacado</li>
+                <li>Información institucional completa</li>
+                <li>Actualización automática cada minuto</li>
+                <li>Reloj digital en tiempo real</li>
+                <li>Diseño responsive y profesional</li>
+                <li>Prevención de apagado de pantalla</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Cómo Usar</h2>
+            <p><strong>1. Ingresa el ID del tótem:</strong></p>
+            <div class="totem-selector">
+                <input type="number" id="totemId" placeholder="Ejemplo: 1" min="1">
+                <button class="btn" onclick="openTotem()">Abrir Tótem</button>
+            </div>
+
+            <div class="info-box">
+                <strong>💡 Nota:</strong> Necesitas tener al menos un tótem creado en el sistema. 
+                Si no tienes ninguno, créalo desde el panel de administración primero.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔗 URLs de Acceso</h2>
+            <p><strong>Panel de Administración:</strong></p>
+            <p><a href="https://totem-admin.onrender.com" target="_blank" class="btn" style="font-size: 0.9rem; padding: 0.5rem 1rem;">Abrir Panel Admin</a></p>
+            
+            <p style="margin-top: 1.5rem;"><strong>Acceso Directo al Tótem:</strong></p>
+            <code>index.html?totem=ID_DEL_TOTEM</code>
+        </div>
+
+        <div class="section">
+            <h2>⚙️ Configuración para Tótems Físicos</h2>
+            <p><strong>Modo Kiosko Chrome/Edge:</strong></p>
+            <code style="display: block; margin: 0.5rem 0;">chrome.exe --kiosk "URL" --start-fullscreen</code>
+            
+            <p style="margin-top: 1rem;"><strong>Recomendaciones:</strong></p>
+            <ul class="feature-list">
+                <li>Resolución: 1920x1080 (Full HD)</li>
+                <li>Conexión estable a internet</li>
+                <li>Deshabilitar ahorro de energía</li>
+                <li>Configurar inicio automático</li>
+            </ul>
+        </div>
+
+        <div class="warning-box">
+            <strong>⚠️ Importante:</strong> Asegúrate de que el backend esté funcionando y que el tótem 
+            exista en la base de datos antes de intentar visualizarlo.
+        </div>
+
+        <div class="section">
+            <h2>📊 Flujo de Trabajo</h2>
+            <ol style="padding-left: 1.5rem;">
+                <li>Crear institución en el panel admin</li>
+                <li>Crear tótem y asociarlo a la institución</li>
+                <li>Subir multimedia (imágenes/videos) al tótem</li>
+                <li>Crear notificaciones para el tótem</li>
+                <li>Abrir la aplicación del tótem con su ID</li>
+            </ol>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #e5e7eb;">
+            <p style="color: #6b7280;">Sistema desarrollado para gestión profesional de tótems digitales</p>
+        </div>
+    </div>
+
+    <script>
+        function openTotem() {
+            const totemId = document.getElementById('totemId').value;
+            if (!totemId || totemId < 1) {
+                alert('Por favor, ingresa un ID de tótem válido (número mayor a 0)');
+                return;
+            }
+            window.open(`index.html?totem=${totemId}`, '_blank');
+        }
+
+        // Permitir Enter para abrir
+        document.getElementById('totemId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                openTotem();
+            }
+        });
+    </script>
+</body>
+</html>

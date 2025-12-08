@@ -51,7 +51,13 @@ export const paginationSchema = Joi.object({
   page: Joi.number().integer().min(1).default(1),
   limit: Joi.number().integer().min(1).max(100).default(10),
   search: Joi.string().max(100).optional(),
-  activo: Joi.boolean().optional()
+  activo: Joi.boolean().optional(),
+  totem_id: Joi.number().integer().positive().optional(),
+  tipo: Joi.string().optional(),
+  prioridad: Joi.string().optional(),
+  leida: Joi.boolean().optional(),
+  institucion_id: Joi.number().integer().positive().optional(),
+  region_id: Joi.number().integer().positive().optional()
 });
 
 export const idSchema = Joi.object({
