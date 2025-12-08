@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Upload, X, FileText, Loader2 } from 'lucide-react';
+import { Upload, X, FileText, Loader2, Eye } from 'lucide-react';
 import api from '../../config/api.config';
 import toast from 'react-hot-toast';
+import PDFViewer from './PDFViewer';
 
 export default function FileUpload({ value, onChange, accept = '*', label = 'Subir archivo', maxSize = 10 }) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(value || '');
+  const [showPDFViewer, setShowPDFViewer] = useState(false);
 
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
@@ -60,27 +62,46 @@ export default function FileUpload({ value, onChange, accept = '*', label = 'Sub
       {preview ? (
         <div className="relative">
           {isPDF ? (
-            <div className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-300 rounded-lg">
-              <FileText className="w-8 h-8 text-red-500" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Archivo PDF</p>
-                <a 
-                  href={preview} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-xs text-blue-600 hover:underline"
+            <>
+              <div className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-300 rounded-lg">
+                <FileText className="w-8 h-8 text-red-500" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">Archivo PDF</p>
+                  <div className="flex gap-3 mt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowPDFViewer(true)}
+                      className="flex items-center gap-1 text-xs text-blue-600 hover:underline"
+                    >
+                      <Eye size={14} />
+                      Ver PDF
+                    </button>
+                    <span className="text-xs text-gray-400">•</span>
+                    <a 
+                      href={preview.replace('/upload/', '/upload/fl_attachment/')} 
+                      download
+                      className="text-xs text-green-600 hover:underline"
+                    >
+                      Descargar
+                    </a>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemove}
+                  className="p-1 text-red-600 hover:bg-red-50 rounded"
                 >
-                  Ver archivo
-                </a>
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={handleRemove}
-                className="p-1 text-red-600 hover:bg-red-50 rounded"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+              
+              {showPDFViewer && (
+                <PDFViewer 
+                  url={preview} 
+                  onClose={() => setShowPDFViewer(false)} 
+                />
+              )}
+            </>
           ) : (
             <div className="relative">
               <img 
