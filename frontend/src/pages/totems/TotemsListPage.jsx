@@ -257,14 +257,14 @@ const TotemsListPage = () => {
                           <button
                             onClick={() => navigate(`/admin/totems/${totem.id}`)}
                             className="text-blue-600 hover:text-blue-900"
-                            title="Ver detalles"
+                            title="Ver/Editar tótem"
                           >
                             <Eye size={18} />
                           </button>
                           <button
-                            onClick={() => navigate(`/admin/totems/${totem.id}/edit`)}
+                            onClick={() => navigate(`/admin/totems/${totem.id}`)}
                             className="text-yellow-600 hover:text-yellow-900"
-                            title="Editar"
+                            title="Editar tótem"
                           >
                             <Edit size={18} />
                           </button>

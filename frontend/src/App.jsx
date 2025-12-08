@@ -60,6 +60,7 @@ function App() {
             <Route path="totems" element={<TotemsListPage />} />
             <Route path="totems/new" element={<TotemFormPage />} />
             <Route path="totems/:id" element={<TotemFormPage />} />
+            <Route path="totems/:id/edit" element={<TotemFormPage />} />
             
             {/* Rutas de Plantillas */}
             <Route path="plantillas" element={<PlantillasListPage />} />
