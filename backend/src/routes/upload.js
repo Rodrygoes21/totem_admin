@@ -20,6 +20,8 @@ router.post('/single', authenticateToken, upload.single('file'), async (req, res
     const cloudinaryResult = await uploadToCloudinary(req.file.path, {
       folder: 'totem_pdfs',
       resource_type: 'auto',
+      access_mode: 'public', // Asegurar acceso público
+      type: 'upload' // Tipo de entrega público
     });
 
     // Eliminar archivo temporal local
@@ -69,6 +71,8 @@ router.post('/multiple', authenticateToken, upload.array('files', 5), async (req
       const cloudinaryResult = await uploadToCloudinary(file.path, {
         folder: 'totem_multimedia',
         resource_type: 'auto',
+        access_mode: 'public', // Asegurar acceso público
+        type: 'upload' // Tipo de entrega público
       });
       
       // Eliminar archivo temporal

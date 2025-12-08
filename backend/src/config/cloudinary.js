@@ -19,10 +19,18 @@ export const uploadToCloudinary = async (filePath, options = {}) => {
       folder: 'totem_uploads',
       resource_type: 'auto', // Detecta automáticamente (image, video, pdf, etc)
       access_mode: 'public', // Asegura que sea público y accesible
+      type: 'upload', // Tipo de entrega público (no 'authenticated')
       ...options,
     };
 
+    console.log('📤 Subiendo a Cloudinary con opciones:', defaultOptions);
     const result = await cloudinary.uploader.upload(filePath, defaultOptions);
+    console.log('✅ Cloudinary upload result:', {
+      url: result.secure_url,
+      type: result.type,
+      access_mode: result.access_mode,
+      resource_type: result.resource_type
+    });
     
     return {
       url: result.secure_url,
