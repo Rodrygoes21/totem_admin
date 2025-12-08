@@ -53,24 +53,17 @@ export default function FileUpload({ value, onChange, accept = '*', label = 'Sub
     onChange('');
   };
 
-  const handleDownload = async () => {
-    try {
-      const response = await fetch(preview);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = preview.split('/').pop() || 'documento.pdf';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      toast.success('Descarga iniciada');
-    } catch (error) {
-      console.error('Error al descargar:', error);
-      // Si falla el fetch, intentar descarga directa
-      window.open(preview, '_blank');
-    }
+  const handleDownload = () => {
+    // Crear enlace temporal con download attribute
+    const a = document.createElement('a');
+    a.href = preview;
+    a.download = preview.split('/').pop().split('?')[0] || 'documento.pdf';
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast.success('Descarga iniciada');
   };
 
   const isPDF = preview && preview.toLowerCase().endsWith('.pdf');

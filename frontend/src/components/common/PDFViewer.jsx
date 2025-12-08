@@ -7,33 +7,27 @@ export default function PDFViewer({ url, onClose }) {
   if (!url) return null;
 
   // Función para descargar el PDF
-  const handleDownload = async () => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = url.split('/').pop() || 'documento.pdf';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(downloadUrl);
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error('Error al descargar:', error);
-      // Si falla, intentar abrir en nueva pestaña
-      window.open(url, '_blank');
-    }
+  const handleDownload = () => {
+    // Crear enlace temporal con download attribute
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = url.split('/').pop().split('?')[0] || 'documento.pdf';
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
-  // URL del proxy del backend para evitar problemas de CORS con Cloudinary
-  const backendProxyUrl = `https://totem-admin.onrender.com/api/proxy/pdf-proxy?url=${encodeURIComponent(url)}`;
+  // URLs directas para visores externos (evitan problemas de CORS)
+  // Google Docs Viewer funciona mejor con URLs directas
+  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
 
-  // URL para Google Docs Viewer (usa el proxy del backend)
-  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(backendProxyUrl)}&embedded=true`;
-
-  // URL para Mozilla PDF.js viewer (usa el proxy del backend)
-  const mozillaViewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(backendProxyUrl)}`;
+  // Mozilla PDF.js viewer
+  const mozillaViewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(url)}`;
+  
+  // URL para iframe directo (puede tener problemas CORS pero lo dejamos como opción)
+  const directUrl = url;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
@@ -102,9 +96,9 @@ export default function PDFViewer({ url, onClose }) {
 
           {viewMode === 'direct' && (
             <iframe
-              src={backendProxyUrl}
+              src={directUrl}
               className="w-full h-full border-0"
-              title="PDF Viewer - Direct (via Backend Proxy)"
+              title="PDF Viewer - Direct"
             />
           )}
         </div>
